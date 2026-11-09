@@ -53,3 +53,19 @@ export const evaluateGuess = (secret: string, guess: string): { bulls: number; c
 
     return { bulls, cows };
 };
+
+const memo: Record<string, number> = {};
+
+export const countPossibleSecrets = (length: number, base: number): number => {
+    const key = `${length}-${base}`;
+    
+    if (memo[key] !== undefined) return memo[key];
+
+    if (length === 0) return 1;
+    if (length > base) return 0;
+
+    const result = base * countPossibleSecrets(length - 1, base - 1);
+    
+    memo[key] = result;
+    return result;
+};
