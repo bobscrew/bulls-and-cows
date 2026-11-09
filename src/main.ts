@@ -4,8 +4,8 @@ import {
     evaluateGuess,
     isValidGuess,
     countPossibleSecrets
-} from './core';
-import { GameState, createInitialState, addAttempt } from './state';
+} from './core.js';
+import { GameState, createInitialState, addAttempt } from './state.js';
 
 const app = document.getElementById('app');
 if (!app) throw new Error('App container not found');

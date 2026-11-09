@@ -1,5 +1,5 @@
-import { createDigitValidator, generateSecret, evaluateGuess, isValidGuess } from './core';
-import { createInitialState, addAttempt } from './state';
+import { createDigitValidator, generateSecret, evaluateGuess, isValidGuess } from './core.js';
+import { createInitialState, addAttempt } from './state.js';
 const app = document.getElementById('app');
 if (!app)
     throw new Error('App container not found');
