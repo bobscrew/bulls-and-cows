@@ -37,3 +37,19 @@ export const generateSecret = (
 
     return pickUnique(digits, length).join('');
 };
+
+export const evaluateGuess = (secret: string, guess: string): { bulls: number; cows: number } => {
+    const secretChars = secret.toLowerCase().split('');
+    const guessChars = guess.toLowerCase().split('');
+
+    // Считаем быков через reduce
+    const bulls = guessChars.reduce((acc, char, i) => {
+        return acc + (char === secretChars[i] ? 1 : 0);
+    }, 0);
+
+    const common = guessChars.filter((char) => secretChars.includes(char)).length;
+
+    const cows = common - bulls;
+
+    return { bulls, cows };
+};
