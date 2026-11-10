@@ -12,6 +12,43 @@ if (!app) throw new Error("App container not found");
 
 let state: GameState = createInitialState();
 
+const getRecords = (): string[] => {
+  const records = localStorage.getItem("bulls_records");
+  return records ? (JSON.parse(records) as string[]) : [];
+};
+
+const saveRecord = (record: string): void => {
+  const records = getRecords();
+  records.push(record);
+  records.sort((a, b) => {
+    const aAttempts = parseInt(a.split(": ")[1]);
+    const bAttempts = parseInt(b.split(": ")[1]);
+    return aAttempts - bAttempts;
+  });
+  localStorage.setItem("bulls_records", JSON.stringify(records.slice(0, 5)));
+};
+
+const renderRecords = (): void => {
+  const records = getRecords();
+  if (records.length === 0) return;
+
+  const container = document.createElement("div");
+  container.className = "records";
+
+  const title = document.createElement("h2");
+  title.textContent = "🏆 Top Records";
+
+  const list = document.createElement("ul");
+  records.forEach((record, index) => {
+    const li = document.createElement("li");
+    li.textContent = `${index + 1}. ${record}`;
+    list.append(li);
+  });
+
+  container.append(title, list);
+  app.append(container);
+};
+
 const renderSettings = (): void => {
   app.innerHTML = "";
 
@@ -40,7 +77,7 @@ const renderSettings = (): void => {
 
   const updateLengthOptions = () => {
     const base = parseInt(baseSelect.value, 10);
-    lengthSelect.innerHTML = ""; // очистка
+    lengthSelect.innerHTML = "";
     const maxLen = base === 2 ? 2 : 6;
     for (let i = 2; i <= maxLen; i++) {
       const option = document.createElement("option");
@@ -52,6 +89,15 @@ const renderSettings = (): void => {
 
   baseSelect.addEventListener("change", updateLengthOptions);
   updateLengthOptions();
+
+  const possibleInfo = document.createElement("p");
+  const updatePossibleInfo = () => {
+    const base = parseInt(baseSelect.value, 10);
+    const length = parseInt(lengthSelect.value, 10);
+    possibleInfo.textContent = `Possible combinations: ${countPossibleSecrets(length, base)}`;
+  };
+  lengthSelect.addEventListener("change", updatePossibleInfo);
+  updatePossibleInfo();
 
   const startBtn = document.createElement("button");
   startBtn.textContent = "Start Game";
@@ -71,13 +117,9 @@ const renderSettings = (): void => {
     renderGame();
   });
 
-  const possibleInfo = document.createElement("p");
-  const currentBase = parseInt(baseSelect.value, 10);
-  const currentLength = parseInt(lengthSelect.value, 10);
-  possibleInfo.textContent = `Possible combinations: ${countPossibleSecrets(currentLength, currentBase)}`;
-
-  container.append(title, baseSelect, lengthSelect, startBtn);
+  container.append(title, possibleInfo, baseSelect, lengthSelect, startBtn);
   app.append(container);
+  renderRecords();
 };
 
 const renderGame = (): void => {
@@ -114,12 +156,12 @@ const renderGame = (): void => {
 
     if (state.status === "won") {
       const time = (Date.now() - state.startTime) / 1000;
-      alert(`You won! Attempts: ${state.history.length}, Time: ${time}s`);
+      alert(
+        `You won! Attempts: ${state.history.length}, Time: ${time.toFixed(2)}s`,
+      );
 
       const record = `${state.settings.base}-${state.settings.length}: ${state.history.length} attempts, ${time.toFixed(2)}s`;
-      const records = JSON.parse(localStorage.getItem("bulls_records") || "[]");
-      records.push(record);
-      localStorage.setItem("bulls_records", JSON.stringify(records));
+      saveRecord(record);
 
       renderSettings();
     } else {
@@ -127,7 +169,14 @@ const renderGame = (): void => {
     }
   });
 
-  container.append(info, input, guessBtn);
+  const newGameBtn = document.createElement("button");
+  newGameBtn.textContent = "New Game";
+  newGameBtn.addEventListener("click", () => {
+    state = createInitialState();
+    renderSettings();
+  });
+
+  container.append(info, input, guessBtn, newGameBtn);
   renderHistory(container);
   app.append(container);
 };
