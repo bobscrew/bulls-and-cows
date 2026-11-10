@@ -35,7 +35,6 @@ export const generateSecret = (length, base, random = Math.random) => {
 export const evaluateGuess = (secret, guess) => {
     const secretChars = secret.toLowerCase().split('');
     const guessChars = guess.toLowerCase().split('');
-    // Считаем быков через reduce
     const bulls = guessChars.reduce((acc, char, i) => {
         return acc + (char === secretChars[i] ? 1 : 0);
     }, 0);

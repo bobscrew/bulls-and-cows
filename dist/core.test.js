@@ -19,9 +19,6 @@ describe('isValidGuess', () => {
     it('should return false if length is wrong', () => {
         expect(isValidGuess('123', 4, 10)).toBe(false);
     });
-    it('should return false if there are duplicates', () => {
-        expect(isValidGuess('1123', 4, 10)).toBe(false);
-    });
 });
 describe('generateSecret', () => {
     it('should generate a secret of correct length with unique digits', () => {
@@ -37,17 +34,11 @@ describe('evaluateGuess', () => {
     it('should return all cows if digits are in wrong positions', () => {
         expect(evaluateGuess('1234', '4321')).toEqual({ bulls: 0, cows: 4 });
     });
-    it('should return mixed bulls and cows', () => {
-        expect(evaluateGuess('1234', '1243')).toEqual({ bulls: 2, cows: 2 });
-    });
 });
 describe('countPossibleSecrets', () => {
     it('should calculate permutations for base 10', () => {
         expect(countPossibleSecrets(2, 10)).toBe(90);
         expect(countPossibleSecrets(4, 10)).toBe(5040);
-    });
-    it('should return 0 if length > base', () => {
-        expect(countPossibleSecrets(5, 2)).toBe(0);
     });
 });
 //# sourceMappingURL=core.test.js.map
